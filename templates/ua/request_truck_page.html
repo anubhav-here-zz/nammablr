@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="manifest" href="/static/manifest-user.json">
+<style>
+  /* Always set the map height explicitly to define the size of the div
+   * element that contains the map. */
+  #map {
+    height: 100%;
+  }
+  /* Optional: Makes the sample page fill the window. */
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  #description {
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+
+
+  #map #infowindow-content {
+    display: inline;
+  }
+
+  .pac-card {
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    background-color: #fff;
+  }
+
+  #pac-input {
+    padding: 10px;
+    width: 100%;
+    border: 0;
+    font-size: 1.5em;
+  }
+
+  #title {
+    color: #fff;
+    background-color: #4d90fe;
+    font-size: 25px;
+    font-weight: 500;
+    padding: 6px 12px;
+  }
+
+  #btn{
+    /* display: none; */
+    /* margin: 10px; */
+  }
+
+</style>
+
+{% endblock %}
+
+{% block main %}
+  {% include 'ua/nav.html' %}
+
+    <div class="pac-card" id="pac-card">
+      <input id="pac-input" type="text"
+          placeholder="Enter a location">
+        <form method="post" id="truckform">
+          <input type="hidden" name="lat" id="lat" value="">
+          <input type="hidden" name="lng" id="lng" value="">
+          <button type="submit" id="btn" class="btn btn-block btn-secondary bg-dark">Request Truck Here</button>
+        </form>
+    </div>
+    <div id="map"></div>
+
+{% endblock %}
+{% block script %}
+    <script>
+      // This example requires the Places library. Include the libraries=places
+      // parameter when you first load the API. For example:
+      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 12.9715987, lng: 77.59456269999998},
+          zoom: 13,
+          disableDefaultUI: true
+        });
+
+        var styledMapType = new google.maps.StyledMapType(
+            [
+              {elementType: 'geometry', stylers: [{color: '#ebe3cd'}]},
+              {elementType: 'labels.text.fill', stylers: [{color: '#523735'}]},
+              {elementType: 'labels.text.stroke', stylers: [{color: '#f5f1e6'}]},
+              {
+                featureType: 'administrative',
+                elementType: 'geometry.stroke',
+                stylers: [{color: '#c9b2a6'}]
+              },
+              {
+                featureType: 'administrative.land_parcel',
+                elementType: 'geometry.stroke',
+                stylers: [{color: '#dcd2be'}]
+              },
+              {
+                featureType: 'administrative.land_parcel',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#ae9e90'}]
+              },
+              {
+                featureType: 'landscape.natural',
+                elementType: 'geometry',
+                stylers: [{color: '#dfd2ae'}]
+              },
+              {
+                featureType: 'poi',
+                elementType: 'geometry',
+                stylers: [{color: '#dfd2ae'}]
+              },
+              {
+                featureType: 'poi',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#93817c'}]
+              },
+              {
+                featureType: 'poi.park',
+                elementType: 'geometry.fill',
+                stylers: [{color: '#a5b076'}]
+              },
+              {
+                featureType: 'poi.park',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#447530'}]
+              },
+              {
+                featureType: 'road',
+                elementType: 'geometry',
+                stylers: [{color: '#f5f1e6'}]
+              },
+              {
+                featureType: 'road.arterial',
+                elementType: 'geometry',
+                stylers: [{color: '#fdfcf8'}]
+              },
+              {
+                featureType: 'road.highway',
+                elementType: 'geometry',
+                stylers: [{color: '#f8c967'}]
+              },
+              {
+                featureType: 'road.highway',
+                elementType: 'geometry.stroke',
+                stylers: [{color: '#e9bc62'}]
+              },
+              {
+                featureType: 'road.highway.controlled_access',
+                elementType: 'geometry',
+                stylers: [{color: '#e98d58'}]
+              },
+              {
+                featureType: 'road.highway.controlled_access',
+                elementType: 'geometry.stroke',
+                stylers: [{color: '#db8555'}]
+              },
+              {
+                featureType: 'road.local',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#806b63'}]
+              },
+              {
+                featureType: 'transit.line',
+                elementType: 'geometry',
+                stylers: [{color: '#dfd2ae'}]
+              },
+              {
+                featureType: 'transit.line',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#8f7d77'}]
+              },
+              {
+                featureType: 'transit.line',
+                elementType: 'labels.text.stroke',
+                stylers: [{color: '#ebe3cd'}]
+              },
+              {
+                featureType: 'transit.station',
+                elementType: 'geometry',
+                stylers: [{color: '#dfd2ae'}]
+              },
+              {
+                featureType: 'water',
+                elementType: 'geometry.fill',
+                stylers: [{color: '#b9d3c2'}]
+              },
+              {
+                featureType: 'water',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#92998d'}]
+              }
+            ],
+            {name: 'Styled Map'});
+            map.mapTypes.set('styled_map', styledMapType);
+        map.setMapTypeId('styled_map');
+
+        var card = document.getElementById('pac-card');
+        var input = document.getElementById('pac-input');
+        var types = document.getElementById('type-selector');
+        var strictBounds = document.getElementById('strict-bounds-selector');
+
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+
+        var autocomplete = new google.maps.places.Autocomplete(input);
+
+        // Bind the map's bounds (viewport) property to the autocomplete object,
+        // so that the autocomplete requests use the current map bounds for the
+        // bounds option in the request.
+        autocomplete.bindTo('bounds', map);
+
+        // Set the data fields to return when the user selects a place.
+        autocomplete.setFields(
+            ['address_components', 'geometry', 'icon', 'name']);
+
+        var image = '/static/images/trash.png';
+        var marker = new google.maps.Marker({
+          map: map,
+          anchorPoint: new google.maps.Point(12.9715987, 77.59456269999998),
+          icon: image
+        });
+				// current loc
+				if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            $("#lat").val(pos.lat);
+            $("#lng").val(pos.lng);
+
+						map.setCenter(pos);
+						marker.setPosition(pos);
+					});}
+
+          google.maps.event.addListener(map, 'click', function(event) {
+             placeMarker(event.latLng);
+          });
+
+          function placeMarker(location) {
+              // var marker = new google.maps.Marker({
+              //     position: location,
+              //     map: map
+              // });
+              marker.setPosition(location);
+              $("#lat").val(location.lat());
+              $("#lng").val(location.lng());
+          }
+
+					// current loc ends
+        autocomplete.addListener('place_changed', function() {
+
+          marker.setVisible(false);
+          var place = autocomplete.getPlace();
+          if (!place.geometry) {
+            // User entered the name of a Place that was not suggested and
+            // pressed the Enter key, or the Place Details request failed.
+            window.alert("No details available for input: '" + place.name + "'");
+            return;
+          }
+
+          // If the place has a geometry, then present it on a map.
+          if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+          } else {
+            map.setCenter(place.geometry.location);
+            map.setZoom(17);  // Why 17? Because it looks good.
+          }
+          marker.setPosition(place.geometry.location);
+          // alert(place.geometry.location.lat());
+          $("#lat").val(place.geometry.location.lat());
+          $("#lng").val(place.geometry.location.lng());
+
+
+          marker.setVisible(true);
+
+        });
+
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9LzyU-nj-XdsV2iv0yTf7GVS3qHU_xls&libraries=places&callback=initMap"
+        async defer></script>
+
+        <script>
+          $("#truckform").on("submit",function(e){
+            if ($("#lat").val().length == 0){
+              e.preventDefault();
+            }
+          })
+        </script>
+
+{% endblock %}

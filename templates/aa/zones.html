@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="manifest" href="/static/manifest-admin.json">
+<style media="screen">
+
+    #map {
+      height: 100%;
+    }
+    /* Optional: Makes the sample page fill the window. */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    </style>
+
+    {% endblock %}
+    {% block main %}
+        {% include 'aa/nav.html' %}
+    <div id="map"></div>
+    <div class="" style="background:#fff; z-index:100; overflow:visible;; width:70%; height:115px; position:absolute; top:20px; ">
+      <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9LzyU-nj-XdsV2iv0yTf7GVS3qHU_xls&libraries=geometry">
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+    <script src="/static/zones/z1.js"> </script>
+    <script src="/static/zones/z2.js"> </script>
+    <script src="/static/zones/z3.js"> </script>
+    <script src="/static/zones/z4.js"> </script>
+    <script src="/static/zones/z5.js"> </script>
+    <script src="/static/zones/z6.js"> </script>
+    <script src="/static/zones/z7.js"> </script>
+    <script src="/static/zones/z8.js"> </script>
+    <script src="/static/zones/z9.js"> </script>
+    <script type="text/javascript">
+    var map;
+    function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 10,
+      center: {lat: 12.9715987,  lng: 77.59456269999998},
+      disableDefaultUI: true
+    });
+    var styledMapType = new google.maps.StyledMapType(
+        [
+          {elementType: 'geometry', stylers: [{color: '#ebe3cd'}]},
+          {elementType: 'labels.text.fill', stylers: [{color: '#523735'}]},
+          {elementType: 'labels.text.stroke', stylers: [{color: '#f5f1e6'}]},
+          {
+            featureType: 'administrative',
+            elementType: 'geometry.stroke',
+            stylers: [{color: '#c9b2a6'}]
+          },
+          {
+            featureType: 'administrative.land_parcel',
+            elementType: 'geometry.stroke',
+            stylers: [{color: '#dcd2be'}]
+          },
+          {
+            featureType: 'administrative.land_parcel',
+            elementType: 'labels.text.fill',
+            stylers: [{color: '#ae9e90'}]
+          },
+          {
+            featureType: 'landscape.natural',
+            elementType: 'geometry',
+            stylers: [{color: '#dfd2ae'}]
+          },
+          {
+            featureType: 'poi',
+            elementType: 'geometry',
+            stylers: [{color: '#dfd2ae'}]
+          },
+          {
+            featureType: 'poi',
+            elementType: 'labels.text.fill',
+            stylers: [{color: '#93817c'}]
+          },
+          {
+            featureType: 'poi.park',
+            elementType: 'geometry.fill',
+            stylers: [{color: '#a5b076'}]
+          },
+          {
+            featureType: 'poi.park',
+            elementType: 'labels.text.fill',
+            stylers: [{color: '#447530'}]
+          },
+          {
+            featureType: 'road',
+            elementType: 'geometry',
+            stylers: [{color: '#f5f1e6'}]
+          },
+          {
+            featureType: 'road.arterial',
+            elementType: 'geometry',
+            stylers: [{color: '#fdfcf8'}]
+          },
+          {
+            featureType: 'road.highway',
+            elementType: 'geometry',
+            stylers: [{color: '#f8c967'}]
+          },
+          {
+            featureType: 'road.highway',
+            elementType: 'geometry.stroke',
+            stylers: [{color: '#e9bc62'}]
+          },
+          {
+            featureType: 'road.highway.controlled_access',
+            elementType: 'geometry',
+            stylers: [{color: '#e98d58'}]
+          },
+          {
+            featureType: 'road.highway.controlled_access',
+            elementType: 'geometry.stroke',
+            stylers: [{color: '#db8555'}]
+          },
+          {
+            featureType: 'road.local',
+            elementType: 'labels.text.fill',
+            stylers: [{color: '#806b63'}]
+          },
+          {
+            featureType: 'transit.line',
+            elementType: 'geometry',
+            stylers: [{color: '#dfd2ae'}]
+          },
+          {
+            featureType: 'transit.line',
+            elementType: 'labels.text.fill',
+            stylers: [{color: '#8f7d77'}]
+          },
+          {
+            featureType: 'transit.line',
+            elementType: 'labels.text.stroke',
+            stylers: [{color: '#ebe3cd'}]
+          },
+          {
+            featureType: 'transit.station',
+            elementType: 'geometry',
+            stylers: [{color: '#dfd2ae'}]
+          },
+          {
+            featureType: 'water',
+            elementType: 'geometry.fill',
+            stylers: [{color: '#b9d3c2'}]
+          },
+          {
+            featureType: 'water',
+            elementType: 'labels.text.fill',
+            stylers: [{color: '#92998d'}]
+          }
+        ],
+        {name: 'Styled Map'});
+        map.mapTypes.set('styled_map', styledMapType);
+        map.setMapTypeId('styled_map');
+  }
+
+  initMap();
+
+    var yelahanka = new google.maps.Polygon({
+        paths: yelahanka_zone,
+        strokeColor: '#1abc9c',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#1abc9c',
+        fillOpacity: 0.35
+    });
+    yelahanka.setMap(map);
+    var dasarahalli = new google.maps.Polygon({
+        paths: dasarahalli_zone,
+        strokeColor: '#3498db',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#3498db',
+        fillOpacity: 0.35
+    });
+    dasarahalli.setMap(map);
+    var gandhinagar = new google.maps.Polygon({
+        paths: gandhinagar_zone,
+        strokeColor: '#9b59b6',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#9b59b6',
+        fillOpacity: 0.35
+    });
+    gandhinagar.setMap(map);
+    var rajarajeshwarinagar = new google.maps.Polygon({
+        paths: rajarajeshwarinagar_zone,
+        strokeColor: '#34495e',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#34495e',
+        fillOpacity: 0.35
+    });
+    rajarajeshwarinagar.setMap(map);
+    var south = new google.maps.Polygon({
+        paths: south_zone,
+        strokeColor: '#f1c40f',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#f1c40f',
+        fillOpacity: 0.35
+    });
+    south.setMap(map);
+    var bommanahalli = new google.maps.Polygon({
+        paths: bommanahalli_zone,
+        strokeColor: '#e67e22',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#e67e22',
+        fillOpacity: 0.35
+    });
+    bommanahalli.setMap(map);
+    var mahadevpura = new google.maps.Polygon({
+        paths: mahadevpura_zone,
+        strokeColor: '#e74c3c',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#e74c3c',
+        fillOpacity: 0.35
+    });
+    mahadevpura.setMap(map);
+    var east = new google.maps.Polygon({
+        paths: east_zone,
+        strokeColor: '#2ecc71',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#2ecc71',
+        fillOpacity: 0.35
+    });
+    east.setMap(map);
+    var west = new google.maps.Polygon({
+        paths: west_zone,
+        strokeColor: '#95a5a6',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#95a5a6',
+        fillOpacity: 0.35
+    });
+    west.setMap(map);
+
+    var z1c=0,z2c=0,z3c=0,z4c=0,z5c=0,z6c=0,z7c=0,z8c=0,z9c=0;
+
+    var cur_latlng;
+
+    {% for item in markers %}
+
+          cur_latlng = new google.maps.LatLng({{markers[item]["lat"]}}, {{markers[item]["lng"]}} );
+
+
+    if(google.maps.geometry.poly.containsLocation(cur_latlng,new google.maps.Polygon({paths: yelahanka_zone}))){
+      z1c+=1;
+    }
+    if(google.maps.geometry.poly.containsLocation(cur_latlng,new google.maps.Polygon({paths: dasarahalli_zone}))){
+      z2c+=1;
+    }
+    if(google.maps.geometry.poly.containsLocation(cur_latlng,new google.maps.Polygon({paths: gandhinagar_zone}))){
+      z3c+=1;
+    }
+    if(google.maps.geometry.poly.containsLocation(cur_latlng,new google.maps.Polygon({paths: rajarajeshwarinagar_zone}))){
+      z4c+=1;
+    }
+    if(google.maps.geometry.poly.containsLocation(cur_latlng,new google.maps.Polygon({paths: south_zone}))){
+      z5c+=1;
+    }
+    if(google.maps.geometry.poly.containsLocation(cur_latlng,new google.maps.Polygon({paths: bommanahalli_zone}))){
+      z6c+=1;
+    }
+    if(google.maps.geometry.poly.containsLocation(cur_latlng,new google.maps.Polygon({paths: mahadevpura_zone}))){
+      z7c+=1;
+    }
+    if(google.maps.geometry.poly.containsLocation(cur_latlng,new google.maps.Polygon({paths: east_zone}))){
+      z8c+=1;
+    }
+    if(google.maps.geometry.poly.containsLocation(cur_latlng,new google.maps.Polygon({paths: west_zone}))){
+      z9c+=1;
+    }
+  {% endfor %}
+
+  console.log(z1c,z2c,z3c,z4c,z5c,z6c,z7c,z8c,z9c);
+
+
+  var ctx = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'doughnut',
+  data: {
+      labels: ["yelahanka" ,"dasarahalli" ,"gandhinagar" ,"rajarajeshwarinagar" ,"south" ,"bommanahalli" ,"mahadevpura" ,"east" ,"west"],
+      datasets: [{
+          label: '# of Requests per Zone',
+          data: [z1c,z2c,z3c,z4c,z5c,z6c,z7c,z8c,z9c],
+          backgroundColor: [
+            '#1abc9c',
+            '#3498db',
+            '#9b59b6',
+            '#34495e',
+            '#f1c40f',
+            '#e67e22',
+            '#e74c3c',
+            '#2ecc71',
+            '#95a5a6'
+          ],
+          borderColor: [
+            '#1abc9c',
+            '#3498db',
+            '#9b59b6',
+            '#34495e',
+            '#f1c40f',
+            '#e67e22',
+            '#e74c3c',
+            '#2ecc71',
+            '#95a5a6'
+          ],
+          borderWidth: 1
+      }]
+  },
+  options: {
+
+  }
+});
+
+    </script>
+
+
+
+
+{% endblock %}
